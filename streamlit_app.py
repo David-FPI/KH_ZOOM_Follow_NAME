@@ -3,7 +3,7 @@ import pandas as pd
 from collections import defaultdict
 from io import BytesIO
 
-st.set_page_config(page_title="📊 Thống kê tham gia lớp học", layout="wide")
+st.set_page_config(page_title="📊 Thống kê KH ZOOM", layout="wide")
 st.title("📊 Tổng hợp số lần tham gia & các buổi học theo nhân viên")
 
 # ======================= Hàm đọc toàn bộ tên từ tất cả sheet =======================
