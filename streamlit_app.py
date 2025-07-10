@@ -124,6 +124,7 @@ if uploaded_file:
                     st.warning(f"⚠️ Sheet '{sheet}' không có cột '{selected_col}'")
                     continue
                 df["SĐT đã chuẩn hóa"] = df[selected_col].apply(normalize_phone)
+                df["Giá trị gốc ban đầu"] = df[selected_col]
                 df["Tên sheet"] = sheet
                 all_data.append(df)
             except Exception as e:
@@ -169,25 +170,33 @@ if uploaded_file:
                 file_name="sdt_sach_khong_none.xlsx",
                 key="download_cleaned_clean"
             )
-        # ===================== 📌 THÊM BẢNG TỔNG HỢP ĐẦY ĐỦ =====================
+        # ===================== 📌 BẢNG TỔNG HỢP TOÀN BỘ GỐC + CHUẨN HÓA =====================
         if "result_df" in st.session_state:
-            st.subheader("📊 Bảng đầy đủ (toàn bộ cột gốc + SĐT đã chuẩn hóa)")
-            full_df = st.session_state["result_df"]
-            st.dataframe(full_df, use_container_width=True, height=500)
+            full_df = st.session_state["result_df"].copy()
+        
+            # Hiển thị thêm cột giá trị gốc (nếu chưa có)
+            if "Giá trị gốc ban đầu" not in full_df.columns and selected_col in full_df.columns:
+                full_df["Giá trị gốc ban đầu"] = full_df[selected_col]
+        
+            # Cho đẹp: đưa cột "Giá trị gốc" và "SĐT đã chuẩn hóa" ra đầu
+            cols = full_df.columns.tolist()
+            ordered_cols = ["Giá trị gốc ban đầu", "SĐT đã chuẩn hóa"] + [c for c in cols if c not in ["Giá trị gốc ban đầu", "SĐT đã chuẩn hóa"]]
+            full_df = full_df[ordered_cols]
+        
+            st.subheader("📊 Bảng đầy đủ (toàn bộ dòng + giá trị gốc + chuẩn hóa)")
+            st.dataframe(full_df, use_container_width=True, height=600)
         
             buffer_full = io.BytesIO()
             full_df.to_excel(buffer_full, index=False)
             buffer_full.seek(0)
         
             st.download_button(
-                "📥 Tải bảng đầy đủ toàn bộ cột",
+                "📥 Tải bảng đầy đủ (có giá trị gốc + chuẩn hóa)",
                 data=buffer_full.getvalue(),
-                file_name="sdt_day_du.xlsx",
-                key="download_full_columns"
+                file_name="bang_day_du_co_goc_va_chuan_hoa.xlsx",
+                key="download_full_goc_va_chuan"
             )
-
-
-            
+                    
 
 
     else:
