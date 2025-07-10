@@ -36,9 +36,15 @@ VIETNAM_OLD_PREFIX_MAP = {
 def normalize_phone(phone):
     if pd.isna(phone):
         return None
-
     phone = str(phone).strip()
+    phone = phone.replace('O', '0').replace('o', '0') 
     phone = re.sub(r'[^\d+]', '', phone)
+    phone = phone.replace("’", "").replace("‘", "")  # loại bỏ dấu lạ
+    phone = phone.lstrip("=+'\"")  # loại bỏ các ký tự dính từ Excel
+
+    if phone.startswith('00'):
+        phone = '+' + phone[2:]
+
     # 🔄 Nếu số bắt đầu bằng 84 và đủ dài → thêm lại tiền tố 0 để trigger map đầu số cũ
     if phone.startswith('84') and len(phone) >= 11:
         phone = '0' + phone[2:]
@@ -88,9 +94,9 @@ def normalize_phone(phone):
                     return f"{fake_plus} / {country}"
             except:
                 continue
-
     # ❌ Không hợp lệ
     return None
+
 
 
 # Giao diện Streamlit
