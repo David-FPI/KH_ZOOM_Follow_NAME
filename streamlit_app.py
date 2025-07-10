@@ -109,7 +109,8 @@ if uploaded_file:
     xls = pd.ExcelFile(uploaded_file)
     sample_df = xls.parse(xls.sheet_names[0])  # Đọc sheet đầu tiên
     st.subheader(f"📄 Sheet đầu tiên: `{xls.sheet_names[0]}`")
-    st.dataframe(sample_df.head())
+    # st.dataframe(sample_df.head())
+    st.dataframe(sample_df, use_container_width=True, height=500)
 
     selected_col = st.selectbox("🔍 Chọn cột chứa số điện thoại cần chuẩn hóa:", sample_df.columns)
 
