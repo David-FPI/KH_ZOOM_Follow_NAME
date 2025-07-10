@@ -169,6 +169,26 @@ if uploaded_file:
                 file_name="sdt_sach_khong_none.xlsx",
                 key="download_cleaned_clean"
             )
+        # ===================== 📌 THÊM BẢNG TỔNG HỢP ĐẦY ĐỦ =====================
+        if "result_df" in st.session_state:
+            st.subheader("📊 Bảng đầy đủ (toàn bộ cột gốc + SĐT đã chuẩn hóa)")
+            full_df = st.session_state["result_df"]
+            st.dataframe(full_df, use_container_width=True, height=500)
+        
+            buffer_full = io.BytesIO()
+            full_df.to_excel(buffer_full, index=False)
+            buffer_full.seek(0)
+        
+            st.download_button(
+                "📥 Tải bảng đầy đủ toàn bộ cột",
+                data=buffer_full.getvalue(),
+                file_name="sdt_day_du.xlsx",
+                key="download_full_columns"
+            )
+
+
+            
+
 
     else:
         st.error("❌ Không có sheet nào được xử lý thành công.")
