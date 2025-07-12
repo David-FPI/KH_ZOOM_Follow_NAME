@@ -104,6 +104,35 @@ st.set_page_config(page_title="Chuẩn hóa SĐT từ file Excel", layout="wide"
 st.title("📱 Chuẩn Hóa Số Điện Thoại Theo Cột Bạn Chọn")
 
 uploaded_file = st.file_uploader("📥 Kéo thả file Excel có nhiều sheet", type=["xlsx"])
+st.markdown("---")
+st.subheader("📲 Hoặc chuẩn hóa SĐT từ danh sách bạn nhập bên dưới (không cần file)")
+manual_input = st.text_area("📥 Nhập danh sách SĐT, mỗi dòng 1 số", height=200, placeholder="vd:\n0912345678\n+886912345678")
+
+if st.button("🚀 Chuẩn hóa danh sách nhập tay"):
+    if manual_input.strip() == "":
+        st.warning("⚠️ Bạn chưa nhập số nào cả!")
+    else:
+        raw_numbers = [line.strip() for line in manual_input.splitlines() if line.strip()]
+        normalized_numbers = [normalize_phone(num) for num in raw_numbers]
+
+        result_manual_df = pd.DataFrame({
+            "Giá trị gốc ban đầu": raw_numbers,
+            "SĐT đã chuẩn hóa": normalized_numbers
+        })
+
+        st.success("✅ Đã chuẩn hóa xong danh sách bạn nhập.")
+        st.dataframe(result_manual_df, use_container_width=True)
+
+        buffer_manual = io.BytesIO()
+        result_manual_df.to_excel(buffer_manual, index=False)
+        buffer_manual.seek(0)
+
+        st.download_button(
+            "📥 Tải danh sách đã chuẩn hóa (nhập tay)",
+            data=buffer_manual.getvalue(),
+            file_name="sdt_nhap_tay_chuan_hoa.xlsx",
+            key="download_manual"
+        )
 
 if uploaded_file:
     xls = pd.ExcelFile(uploaded_file)
